@@ -1,4 +1,6 @@
-﻿namespace TrieDataStructure
+﻿using System;
+
+namespace TrieDataStructure
 {
     class Program
     {
@@ -7,10 +9,14 @@
             //Create the first node of the tree
             Node root = new Node('\0', 0);
 
-            string[] testString = { "bad", "sad", "sam", "bass", "bad", "crybaby"};
+            string[] inputString = { "bad", "sad", "sam", "bass", "bad", "crybaby"};
+            string[] searchString = { "bass", "never", "random", "sad", "ba", "crybab", "saman", "bas", "sam", "sad" };
 
-            root.AddSentence(root, testString);
+            root.AddSentence(root, inputString);
             root.PrintTree("", true);
+
+            Console.WriteLine("Words found: {0}", root.SearchSentence(root, searchString));
+            
         }
     }
 }

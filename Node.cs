@@ -10,25 +10,28 @@ namespace TrieDataStructure
         public List<Node> children { get; set; }
         public int numOfChildren { get; set; }
 
+        public bool isFinal { get; set; }
+
         //Constructor
         public Node(char value, int numOfChildren)
         {
             this.value = value;
             this.numOfChildren = numOfChildren;
             children = new List<Node>();
+            isFinal = false;
         }
 
-        //Methods
-        public void AddSentence(Node root, string[] testString)
+        //==========Methods==========
+        public void AddSentence(Node node, string[] sentence)
         {
-            foreach (string current_word in testString)
+            foreach (string current_word in sentence)
             {
                 //Create a list of characters of our current word
                 List<char> word = new List<char>();
                 foreach (char a in current_word)
                     word.Add(a);
 
-                AddWord(root, word);
+                AddWord(node, word);
             }
         }
         public void AddWord(Node node, List<char> word)
@@ -41,6 +44,8 @@ namespace TrieDataStructure
                 word.RemoveAt(0);
                 if (word.Count > 0)
                     AddWord(node.children[0], word);
+                else
+                    node.children[0].isFinal = true;
             }
             else //node has children, search if value already exists.
             {
@@ -51,7 +56,8 @@ namespace TrieDataStructure
                     word.RemoveAt(0);
                     if (word.Count > 0)
                         AddWord(node.children[index], word);
-
+                    else
+                        node.children[index].isFinal = true;
                 }
                 else //none of our children hold the value - add a new child with value.
                 {
@@ -60,20 +66,56 @@ namespace TrieDataStructure
                     word.RemoveAt(0);
                     if (word.Count > 0)
                         AddWord(node.children[node.numOfChildren - 1], word);
+                    else
+                        node.children[node.numOfChildren - 1].isFinal = true;
                 }
             }
         }
 
-        //Returns the index of the value if it exists, -1 othewise.
-        public static int ValueExists(Node node, char val)
+        public  int SearchSentence(Node node, string[] sentence)
         {
-            for (int i = 0; i < node.children.Count; i++)
+            int wordsFound = 0;
+            foreach (string current_word in sentence)
+            {
+                List<char> word = new List<char>();
+                foreach (char a in current_word)
+                    word.Add(a);
+                if (SearchWord(node, word) == true)
+                    wordsFound++;
+            }
+
+            return wordsFound;
+        } //very similar to AddSentence
+
+        public bool SearchWord(Node node, List<char> word)
+        {
+            if (word.Count == 0 && node.isFinal == true)
+                return true;
+
+            if (word.Count == 0 && node.isFinal == false)
+                return false;
+
+            int index = ValueExists(node, word[0]);
+            if (index >= 0)
+            {
+                word.RemoveAt(0);
+                 return (SearchWord(node.children[index], word));
+            }
+            else
+                return false;
+        } ////recursive boolean method, these are fun!...
+
+        //Returns the index of the child node that holds the value, -1 if value doesn't exist.
+        public int ValueExists(Node node, char val)
+        {
+            for (int i = 0; i < node.numOfChildren; i++)
             {
                 if (node.children[i].value == val)
                     return i;
             }
             return -1;
         }
+        //Prints our tree in a neat fashion.
         public void PrintTree(string indent, bool last)
         {
             Console.Write(indent);

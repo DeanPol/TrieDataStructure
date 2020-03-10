@@ -6,13 +6,10 @@ namespace TrieDataStructure
     class Node
     {
         //Fields
-        public char value { get; set; }
-        public List<Node> children { get; set; }
-        public int numOfChildren { get; set; }
-
-        public bool isFinal { get; set; }
-
-        public List<string> wordsMatched = new List<string>();
+        private char value { get; set; }
+        private List<Node> children { get; set; }
+        private int numOfChildren { get; set; }
+        private bool isFinal { get; set; }
 
         //Constructor
         public Node(char value, int numOfChildren)
@@ -36,7 +33,7 @@ namespace TrieDataStructure
                 AddWord(node, word);
             }
         }
-        public void AddWord(Node node, List<char> word)
+        private void AddWord(Node node, List<char> word)
         {
             //if our node has no children, create a child and assign value to it.
             if (node.numOfChildren == 0)
@@ -82,36 +79,80 @@ namespace TrieDataStructure
                 List<char> word = new List<char>();
                 foreach (char a in current_word)
                     word.Add(a);
-                if (SearchWord(node, word) == true)
+
+                if (SearchWord(node, word, current_word) == true)
                 {
                     wordsFound++;
-                    wordsMatched.Add(current_word);
+                    Console.WriteLine("Found : {0}", current_word);
                 }
             }
-
             return wordsFound;
         } 
 
-        public bool SearchWord(Node node, List<char> word)
+        private bool SearchWord(Node node, List<char> word, string current_word) //recursive boolean method, these are fun!...
         {
             if (word.Count == 0 && node.isFinal == true)
                 return true;
 
-            if (word.Count == 0 && node.isFinal == false)
+            if (word.Count == 0 && node.isFinal == false) //Search term is too short, autocomplete candidate.
+            {
+                AutoCompleteWord(node, current_word);
                 return false;
+            }
 
             int index = ValueExists(node, word[0]);
             if (index >= 0)
             {
                 word.RemoveAt(0);
-                 return (SearchWord(node.children[index], word));
+                 return (SearchWord(node.children[index], word, current_word));
             }
             else
                 return false;
-        } ////recursive boolean method, these are fun!...
+        }
+
+        //This method will find existing words that contain as a prefix our current search word (assuming criterias are met).
+        private void AutoCompleteWord(Node node, string current_word)
+        {
+            List<string> suggestions = new List<string>();
+            List<char> characters = new List<char>();
+            PopulateSuggestions(node, suggestions, characters);
+            
+            //filter through suggestions, only show words that aren't too different
+            for (int i = 0; i < suggestions.Count; i++)
+            {
+                if ((float)current_word.Length / (float)suggestions[i].Length < 0.7) //if our search word is up to 30% different in size
+                    suggestions.RemoveAt(i);
+            }
+
+            if (suggestions.Count > 0)
+            {
+                Console.Write("Instead of '{0}', did you mean '{1}' ?", current_word, current_word + suggestions[0]);
+                for (int i = 1; i < suggestions.Count; i++)
+                    Console.Write(" or '{0}' ?", current_word + suggestions[i]);
+                Console.WriteLine();
+            }
+        }
+
+        private void PopulateSuggestions(Node node, List<string> suggestions, List<char> characters)
+        {
+            while(node.numOfChildren > 0)
+            {
+                for(int i = 0; i < node.numOfChildren; i++)
+                {
+                    characters.Add(node.children[i].value);
+                    PopulateSuggestions(node.children[i], suggestions, characters);
+                    characters.RemoveAt(characters.Count - 1);
+                }
+                return;
+            }
+            string suggestion = "";
+            foreach (char a in characters)
+                suggestion += a;
+            suggestions.Add(suggestion);
+        }
 
         //Returns the index of the child node that holds the value, -1 if value doesn't exist.
-        public int ValueExists(Node node, char val)
+        private int ValueExists(Node node, char val) //Linear algorith. Worst case O(n), subject to change.
         {
             for (int i = 0; i < node.numOfChildren; i++)
             {
@@ -120,7 +161,7 @@ namespace TrieDataStructure
             }
             return -1;
         }
-        //Prints our tree in a neat fashion.
+        //Prints our tree in a neat fashion. (Linear)
         public void PrintTree(string indent, bool last)
         {
             Console.Write(indent);

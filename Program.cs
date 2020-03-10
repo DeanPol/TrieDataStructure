@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace TrieDataStructure
 {
@@ -8,15 +9,26 @@ namespace TrieDataStructure
         {
             //Create the first node of the tree
             Node root = new Node('\0', 0);
+            string inputFilePath = @"C:\Users\Dean\dev\TrieDataStructure\data\input_small.txt";
+            string searchFilePath = @"C:\Users\Dean\dev\TrieDataStructure\data\search_small.txt";
 
-            string[] inputString = { "bad", "sad", "sam", "bass", "bad", "crybaby"};
-            string[] searchString = { "bass", "never", "random", "sad", "ba", "crybab", "saman", "bas", "sam", "sad" };
+            if ((!File.Exists(inputFilePath)) || (!File.Exists(searchFilePath)))
+            {
+                Console.WriteLine("One or both of the files could not be found");
+                return;
+            }
 
-            root.AddSentence(root, inputString);
+            string[] inputData = System.IO.File.ReadAllLines(inputFilePath);
+            string[] searchData = System.IO.File.ReadAllText(searchFilePath).Split();
+
+            foreach(string sentence in inputData)
+                root.AddSentence(root, sentence.Split());
+            
             root.PrintTree("", true);
 
-            Console.WriteLine("Words found: {0}", root.SearchSentence(root, searchString));
-            
+            Console.WriteLine("Words found: {0}", root.SearchSentence(root, searchData));
+            foreach (string word in root.wordsMatched)
+                Console.WriteLine($"{word}");
         }
     }
 }

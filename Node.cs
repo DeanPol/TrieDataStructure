@@ -12,6 +12,8 @@ namespace TrieDataStructure
 
         public bool isFinal { get; set; }
 
+        public List<string> wordsMatched = new List<string>();
+
         //Constructor
         public Node(char value, int numOfChildren)
         {
@@ -72,7 +74,7 @@ namespace TrieDataStructure
             }
         }
 
-        public  int SearchSentence(Node node, string[] sentence)
+        public  int SearchSentence(Node node, string[] sentence) //very similar to AddSentence
         {
             int wordsFound = 0;
             foreach (string current_word in sentence)
@@ -81,11 +83,14 @@ namespace TrieDataStructure
                 foreach (char a in current_word)
                     word.Add(a);
                 if (SearchWord(node, word) == true)
+                {
                     wordsFound++;
+                    wordsMatched.Add(current_word);
+                }
             }
 
             return wordsFound;
-        } //very similar to AddSentence
+        } 
 
         public bool SearchWord(Node node, List<char> word)
         {

@@ -4,4 +4,4 @@ Searching through another specified text file, it reports the number of words(an
 Search words that are lengthwise a bit too short compared to existing(registered in tree) words are modified with our 
 Autocomplete method.  
 
-Goal of this project is to be able to quickly reTRIEve words(for now) and modify them with autocompletion and autocorrection(and more).
+Goal of this project is to be able to quickly reTRIEve words(for now) and modify them with autocompletion, autocorrection and more...

@@ -3,14 +3,8 @@ using System.Collections.Generic;
 
 namespace TrieDataStructure
 {
-    class Node
+    sealed class Node : Node_Core
     {
-        //Fields
-        private char value { get; set; }
-        private List<Node> children { get; set; }
-        private int numOfChildren { get; set; }
-        private bool isFinal { get; set; }
-
         //Constructor
         public Node(char value, int numOfChildren)
         {
@@ -120,7 +114,7 @@ namespace TrieDataStructure
             //filter through suggestions, only show words that aren't too different
             for (int i = 0; i < suggestions.Count; i++)
             {
-                if ((float)current_word.Length / (float)suggestions[i].Length < 0.7) //if our search word is up to 30% different in size
+                if ((float)current_word.Length / (float)suggestions[i].Length < 0.7) //if our search word is no more than 30% different in size.
                     suggestions.RemoveAt(i);
             }
 
@@ -131,8 +125,12 @@ namespace TrieDataStructure
                     Console.Write(" or '{0}' ?", current_word + suggestions[i]);
                 Console.WriteLine();
             }
+            //just to be safe...
+            suggestions.Clear();
+            characters.Clear();
         }
 
+        //Depth first search. Populate list only with complete suffixes.
         private void PopulateSuggestions(Node node, List<string> suggestions, List<char> characters)
         {
             while(node.numOfChildren > 0)
@@ -152,7 +150,7 @@ namespace TrieDataStructure
         }
 
         //Returns the index of the child node that holds the value, -1 if value doesn't exist.
-        private int ValueExists(Node node, char val) //Linear algorith. Worst case O(n), subject to change.
+        private int ValueExists(Node node, char val) //Time complexity O(n), need to improve!
         {
             for (int i = 0; i < node.numOfChildren; i++)
             {

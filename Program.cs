@@ -7,13 +7,13 @@ namespace TrieDataStructure
     {
         static void Main(string[] args)
         {
-            //Define data we are working with.
-            string inputFilePath = @"C:\Users\Dean\dev\TrieDataStructure\data\input_small.txt";
-            string searchFilePath = @"C:\Users\Dean\dev\TrieDataStructure\data\search_small.txt";
+            //Target data we are working with.
+            string inputFilePath = @"<filepath-to-input>";
+            string searchFilePath = @"<filepath-to-input>";
 
             if ((!File.Exists(inputFilePath)) || (!File.Exists(searchFilePath)))
             {
-                Console.WriteLine("One or both of the files could not be found");
+                Console.WriteLine("Input and/or search files could not be found.");
                 return;
             }
 
@@ -23,13 +23,13 @@ namespace TrieDataStructure
             string[] inputData = System.IO.File.ReadAllLines(inputFilePath);
             string[] searchData = System.IO.File.ReadAllText(searchFilePath).Split();
 
-            //Our populate tree method.
+            //Populate tree.
             foreach(string sentence in inputData)
                 root.AddSentence(root, sentence.Split());
             
             root.PrintTree("", true);
 
-            //Our search method.
+            //Print out search results.
             Console.WriteLine("Words found: {0}", root.SearchSentence(root, searchData));
         }
     }
